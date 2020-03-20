@@ -16,7 +16,7 @@
       aws_s3:
         bucket: awx-conatel
         object: '{{hostvars["DUMMY"]["backup_s3_key"]}}'
-        dest: '{{hostvars["DUMMY"]["backup_s3_key"] | basename}}'
+        dest: '/tmp/{{hostvars["DUMMY"]["backup_s3_key"] | basename}}'
         mode: get
 
 - hosts: awx
@@ -46,7 +46,7 @@
         name: awx
         state: restore
         ssl_mode: disable
-        target: '{{hostvars["DUMMY"]["backup_s3_key"] | basename}}'
+        target: '/tmp/{{hostvars["DUMMY"]["backup_s3_key"] | basename}}'
       become: no
 
 - hosts: awx
@@ -68,5 +68,5 @@
   tasks:
     - name: Delete backup file
       file:
-        path: '{{hostvars["DUMMY"]["backup_s3_key"] | basename}}'
+        path: '/tmp/{{hostvars["DUMMY"]["backup_s3_key"] | basename}}'
         state: 'absent'
