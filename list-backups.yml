@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  connection: local
+  tasks:
+    - name: List backups from S3
+      aws_s3:
+        bucket: awx-conatel
+        prefix: 'backups'
+        mode: list
+      register: output
+
+    - name: Print Backups lists
+      debug:
+        var: output["s3_keys"]

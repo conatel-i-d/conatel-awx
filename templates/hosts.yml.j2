@@ -1,0 +1,23 @@
+all:
+  children:
+    awx:
+      hosts:
+        # Modifique este valor con la IP o nombre de dominio del servidor de AWX.
+        <awx_server_ip>:
+          # Comentar si el servidor donde se va a instalar el AWX no requiere de 
+          # privilegios elevados para ejecutar Docker y Docker Compose.
+          ansible_become: True
+          
+          # Descomentar si el servidor utiliza una llave privada para su conexión
+          #
+          # OBS:  No modifique el valor de `ansible_ssh_private_key_file` si piensa
+          #       utilizar la imagen del contenedor provista a través de `make`.
+          #
+          # ansible_ssh_private_key_file: /root/.ssh/ansible_ssh_private_key
+          # ansible_ssh_user: ubuntu
+
+          # Descomentar y editar si el servidor utiliza solamente usuario y password
+          # para autenticar usuarios por SSH.
+          # ansible_user: ejemplo
+          # ansible_password: ejemplo
+          # ansible_become_password: ejemplo

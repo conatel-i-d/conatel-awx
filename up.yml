@@ -1,0 +1,40 @@
+---
+- hosts: awx
+  gather_facts: yes
+  vars_files:
+    - ./vars.yml
+  tasks:
+    - name: Install Python and Pip
+      apt:
+        update_cache: yes
+        pkg:
+          - python
+          - python-pip
+
+    - name: Upgrade Pip
+      pip: 
+        name: pip
+        extra_args: --upgrade
+
+    - name: Install docker
+      import_role:
+        name: geerlingguy.docker
+
+    - name: Install pip dependencies
+      pip:
+        name:
+          - docker
+          - docker-compose
+
+    - name: Create the external docker network
+      docker_network:
+        name: '{{external_network}}'
+        state: present
+
+    - name: Boot up the PostgreSQL database
+      import_role:
+        name: conatel_digital_hub.run_postgres
+
+    - name: Boot up the AWX service
+      import_role:
+        name: conatel_digital_hub.run_awx

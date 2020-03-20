@@ -1,0 +1,6 @@
+---
+- hosts: awx
+  gather_facts: no
+  tasks:
+    - name: Ping
+      ping:

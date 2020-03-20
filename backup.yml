@@ -1,0 +1,24 @@
+---
+- hosts: awx
+  gather_facts: yes
+  connection: local
+  vars_files:
+    - ./vars.yml
+  tasks:
+    - name: Dump the awx database
+      postgresql_db:
+        login_host: '{{ ansible_host }}'
+        login_user: '{{ postgres_admin_username }}'
+        login_password: '{{ postgres_admin_password }}'
+        name: awx
+        state: dump
+        ssl_mode: disable
+        target: '/tmp/{{ ansible_date_time.iso8601 }}.sql.gz'
+      become: no
+
+    - name: Upload backup to S3
+      aws_s3:
+        bucket: awx-conatel
+        object: '/backups/{{ ansible_date_time.iso8601 }}.sql.gz'
+        src: '/tmp/{{ ansible_date_time.iso8601 }}.sql.gz'
+        mode: put

@@ -1,0 +1,72 @@
+---
+- hosts: localhost
+  gather_facts: no
+  connection: local
+  vars_prompt:
+    - name: backup_s3_key
+      prompt: "Ingrese la llave en S3 del respaldo"
+      private: no
+  tasks:
+    - name: Store the backup_s3_key so that it can be used by other plays
+      add_host:
+        name: DUMMY
+        backup_s3_key: '{{ backup_s3_key }}'
+
+    - name: Get backup
+      aws_s3:
+        bucket: awx-conatel
+        object: '{{hostvars["DUMMY"]["backup_s3_key"]}}'
+        dest: '{{hostvars["DUMMY"]["backup_s3_key"] | basename}}'
+        mode: get
+
+- hosts: awx
+  gather_facts: no
+  vars_files:
+    - ./vars.yml
+  tasks:
+    - name: Stop the AWX containers
+      docker_compose:
+        project_src: '{{ project_dir }}/awx'
+        build: yes
+        state: present
+        stopped: true
+      become: Yes
+
+- hosts: awx
+  gather_facts: no
+  connection: local
+  vars_files:
+    - ./vars.yml
+  tasks:
+    - name: Restore the awx database
+      postgresql_db:
+        login_host: '{{ ansible_host }}'
+        login_user: '{{ postgres_admin_username }}'
+        login_password: '{{ postgres_admin_password }}'
+        name: awx
+        state: restore
+        ssl_mode: disable
+        target: '{{hostvars["DUMMY"]["backup_s3_key"] | basename}}'
+      become: no
+
+- hosts: awx
+  gather_facts: no
+  vars_files:
+    - ./vars.yml
+  tasks:
+    - name: Restart the containers
+      docker_compose:
+        project_src: '{{ project_dir }}/awx'
+        build: yes
+        state: present
+        restarted: true
+      become: Yes
+
+- hosts: localhost
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: Delete backup file
+      file:
+        path: '{{hostvars["DUMMY"]["backup_s3_key"] | basename}}'
+        state: 'absent'
