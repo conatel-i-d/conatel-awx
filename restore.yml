@@ -38,12 +38,37 @@
   vars_files:
     - ./vars.yml
   tasks:
-    - name: Restore the awx database
+    - name: Delete current DB
       postgresql_db:
         login_host: '{{ ansible_host }}'
         login_user: '{{ postgres_admin_username }}'
         login_password: '{{ postgres_admin_password }}'
-        name: awx
+        name: '{{awx_database}}'
+        owner: '{{ awx_database_username }}'
+        state: absent
+        ssl_mode: disable
+        target: '/tmp/{{hostvars["DUMMY"]["backup_s3_key"] | basename}}'
+      become: no
+
+    - name: Create the AWX DB
+      postgresql_db:
+        login_host: '{{ ansible_host }}'
+        login_user: '{{ postgres_admin_username }}'
+        login_password: '{{ postgres_admin_password }}'
+        name: '{{awx_database}}'
+        owner: '{{ awx_database_username }}'
+        state: present
+        ssl_mode: disable
+        target: '/tmp/{{hostvars["DUMMY"]["backup_s3_key"] | basename}}'
+      become: no
+
+    - name: Restore the AWX database
+      postgresql_db:
+        login_host: '{{ ansible_host }}'
+        login_user: '{{ postgres_admin_username }}'
+        login_password: '{{ postgres_admin_password }}'
+        name: '{{awx_database}}'
+        owner: '{{ awx_database_username }}'
         state: restore
         ssl_mode: disable
         target: '/tmp/{{hostvars["DUMMY"]["backup_s3_key"] | basename}}'
@@ -54,19 +79,10 @@
   vars_files:
     - ./vars.yml
   tasks:
-    - name: Restart the containers
+    - name: Restart the AWX containers
       docker_compose:
         project_src: '{{ project_dir }}/awx'
         build: yes
         state: present
-        restarted: true
+        stopped: false
       become: Yes
-
-- hosts: localhost
-  gather_facts: no
-  connection: local
-  tasks:
-    - name: Delete backup file
-      file:
-        path: '/tmp/{{hostvars["DUMMY"]["backup_s3_key"] | basename}}'
-        state: 'absent'

@@ -5,6 +5,8 @@ postgres_expose_port: True
 postgres_admin_username: postgres
 postgres_admin_password: postgrespass
 awx_version: '8.0.0'
+awx_database: awx
+awx_database_username: awx
 project_dir: /home/{{ ansible_user }}/awx_compose
 state: present
 external_network: awx_vpn

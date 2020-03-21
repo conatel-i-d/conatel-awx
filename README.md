@@ -67,7 +67,10 @@ Luego, configurar un archivo llamado `vars.yml` donde se deben configurar como m
 
 | Variable | Tipo | Descripción |
 | --- | --- | --- |
-| `awx_web_host` | `string` |Debe configurarse con el valor `awxweb`. |
+| `awx_version` | `string` | Versión de AWX. Probado con `8.0.0` |
+| `awx_database` | `string` | Nombre de la base de datos. `awx` por defecto. |
+| `awx_database_username` | `string` | Usuario con permisos para acceder a la base de datos de AWX. `aws` por defecto. |
+| `awx_web_host` | `string` | Debe configurarse con el valor `awxweb`. |
 | `awx_task_host` | `string` | Debe configurarse con el valor `awx`. |
 | `postgres_version` | `string` | Debe configurarse con el valor `10`. |
 | `postgres_expose_port` | `boolean` | Configurarlo como `True` si se desea exponer el puerto de la base de datos. |
@@ -102,8 +105,8 @@ La lista de `playbooks` disponibles es la siguiente:
 
 | Archivo | Descripción |
 | --- | --- |
-| `init.yml` | Inicializa el archivo de `hosts.yml` y `vars.yml` |
 | `backup.yml` | Obtiene un respaldo de la base de datos y lo almacena en S3. |
+| `init.yml` | Inicializa el archivo de `hosts.yml` y `vars.yml` |
 | `list-backups.yml` | Devuelve una lista de los respaldos de las bases de datos existentes. |
 | `ping.yml` | Verifica la conectividad con el servidor. |
 | `restore.yml` | Reestablece una versión anterior de la base de datos, almacenado en S3. |
@@ -173,15 +176,15 @@ Las tareas definidas son las siguientes:
 
 | Tarea | Descripción | Ejemplo |
 | --- | --- | --- |
+| `attach` | Permite acceder a la consola del contenedor. | `make attach` |
+| `backup` | Crea un backup de la base de datos y la almacena en S3 | `make backup` |
+| `build` | Crea la imagen del contenedor. | `make build` |
 | `default` | Corre un script para simplificar la ejecución de los `playbooks` | `make` |
 | `init` | Inicializa los archivos `vars.yml` y `hosts.yml` | `make init` |
 | `ping` | Verifica la conectividad con el servidor. | `make ping` |
-| `build` | Crea la imagen del contenedor. | `make build` |
-| `backup` | Crea un backup de la base de datos y la almacena en S3 | `make backup` |
-| `up` | Levanta el servidor de AWX. | `make up` |
-| `restore` | Reestablece un respaldo anterior de la base de datos en el sistema | `make restore` | 
-| `attach` | Permite acceder a la consola del contenedor. | `make attach` |
 | `playbook` | Permite correr un playbook desde el contenedor. Es necesario configurar la variable `file` con el nombre del contenedor para que funcione. | `make playbook file=ping.yml` |
+| `restore` | Reestablece un respaldo anterior de la base de datos en el sistema | `make restore` | 
+| `up` | Levanta el servidor de AWX. | `make up` |
 
 ## Instrucciones para correr con `./run.sh`<a id="run"></a>
 
