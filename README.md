@@ -31,6 +31,7 @@ Se debe contar con las siguientes variables de entorno para poder configurar alg
 En el caso de que se desee utilizar `tower-cli` desde el contenedor, se puede configurar a través de las siguientes variables de entorno:
 
 | Variable | Default | Descripción |
+| --- | --- | --- |
 | `TOWER_HOST` | `http://127.0.0.1:8052` | Dirección del host de AWX. |
 | `TOWER_USERNAME` | `admin` | Usuario administrador del AWX. |
 | `TOWER_USERNAME` | `password` | Contraseña del usuario administrador del AWX. |
