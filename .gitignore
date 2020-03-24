@@ -3,3 +3,5 @@ hosts.yml
 vars.yml
 backups
 roles
+exports.json
+exports.yaml

@@ -12,3 +12,13 @@ WORKDIR /ansible
 
 RUN echo 'export PS1="[\[\033[32m\]\w]\[\033[0m\]\n\[\033[1;36m\]\u\[\033[1;33m\]-> \[\033[0m\]"' >> /root/.bashrc
 RUN echo 'alias cls=clear' >> /root/.bashrc
+
+ARG TOWER_HOST=http://127.0.0.1:8052
+ARG TOWER_USERNAME=admin
+ARG TOWER_PASSWORD=awxpass
+ARG TOWER_VERIFY_SSL=False
+RUN pip install ansible-tower-cli
+RUN tower-cli config host ${TOWER_HOST}
+RUN tower-cli config username ${TOWER_USERNAME}
+RUN tower-cli config password ${TOWER_PASSWORD}
+RUN tower-cli config verify_ssl ${TOWER_VERIFY_SSL}

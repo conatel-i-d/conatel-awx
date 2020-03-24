@@ -18,7 +18,7 @@ Serie de playbooks para levantar un servidor AWX.
   - `docker`
   - `make`
 
-## Variables de entorno
+## Variables de entorno<a id="environment_variables"></a>
 
 Se debe contar con las siguientes variables de entorno para poder configurar algunos servicios del proyecto. Las mismas se pueden cargar directamente sobre la sesión (utilizando el comando `export`), ó, creando un archivo `.env` en la raiz del proyecto. Las variables a configurar son las siguientes:
 
@@ -28,12 +28,25 @@ Se debe contar con las siguientes variables de entorno para poder configurar alg
 | `AWS_ACCESS_KEY_ID` | Llave de acceso de un usuario de AWS con acceso al Bucket `awx-conatel`. |
 | `AWS_SECRET_ACCESS_KEY` | Llave de acceso secreta de un usuario de AWS con acceso al Bucket `awx-conatel`. |
 
+En el caso de que se desee utilizar `tower-cli` desde el contenedor, se puede configurar a través de las siguientes variables de entorno:
+
+| Variable | Default | Descripción |
+| `TOWER_HOST` | `http://127.0.0.1:8052` | Dirección del host de AWX. |
+| `TOWER_USERNAME` | `admin` | Usuario administrador del AWX. |
+| `TOWER_USERNAME` | `password` | Contraseña del usuario administrador del AWX. |
+| `TOWER_VERIFY_SSL` | `false` | Flag para indicar si se debe verificar el certificado del servidor. |
+
 Ejemplo de un archivo `.env`.
 
 ```ini
 ANSIBLE_SSH_PRIVATE_KEY_FILE=~/.ssh/id_rsa
 AWS_ACCESS_KEY_ID=XXX
 AWS_SECRET_ACCESS_KEY=XXX
+# Optionals
+TOWER_HOST=http://192.168.1.1:8052
+TOWER_USERNAME=admin
+TOWER_PASSWORD=password
+TOWER_VERIFY_SSL=false
 ```
 
 ## Instrucciones
@@ -186,7 +199,8 @@ Las tareas definidas son las siguientes:
 | `list-roles` | Imprime la lista de los roles instalados. | `make list-roles` |
 | `ping` | Verifica la conectividad con el servidor. | `make ping` |
 | `playbook` | Permite correr un playbook desde el contenedor. Es necesario configurar la variable `file` con el nombre del contenedor para que funcione. | `make playbook file=ping.yml` |
-| `restore` | Reestablece un respaldo anterior de la base de datos en el sistema | `make restore` | 
+| `restore` | Reestablece un respaldo anterior de la base de datos en el sistema | `make restore` |
+| `tower-cli` | Permite ejecutar comandos a través de `tower-cli`. **Debe prefijar las opciones con `--`.** |
 | `up` | Levanta el servidor de AWX. | `make up` |
 
 ## Instrucciones para correr con `./run.sh`<a id="run"></a>
@@ -229,3 +243,15 @@ Despues de realizar algunas pruebas iniciales, nos presentará el siguiente men�
 ```
 
 A partir de ahí, puede seguir las indicaciones para correr cada una de las tareas.
+
+## Como utilizar `tower-cli` desde el contenedor
+
+Dentro del contenedor del proyecto viene instalado `tower-cli`. Esta herramienta permite interactuar con los servidores de AWX desde la línea de comandos. Para su configuración, es necesario configurar las variables de entorno opcionales definidas en la sección [Variables de entorno](#environment_variables).
+
+Se incluye una tarea de `make` para simplificar su uso a través de `docker`:
+
+```bash
+make tower-cli -- --version
+```
+
+**OBS: Identificar el uso de `--` (doble guion) antes de pasar opciones a `tower-cli`. Esto es para indicarle a `make` que no debe pasar esas opciones.**
