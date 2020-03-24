@@ -1,0 +1,5 @@
+- src: conatel_digital_hub.run_awx
+
+- src: conatel_digital_hub.run_postgres
+
+- src: geerlingguy.docker

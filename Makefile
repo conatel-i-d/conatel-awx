@@ -1,11 +1,22 @@
 #!make
 include .env
 export $(shell sed 's/=.*//' .env)
+export ANSIBLE_CONFIG=./ansible.cfg
 
-.PHONY: playbook build ping test init restore list-backups attach
+.PHONY: playbook build ping test init restore list-backups attach destroy install-roles list-roles
 
 default:
 	@./run.sh
+
+install-roles:
+	@rm -Rf roles \
+	&& ansible-galaxy install -r requirements.yml -p roles --force
+
+list-roles:
+	@ansible-galaxy list
+
+destroy:
+	@make playbook file=destroy.yml
 
 init:
 	@make playbook file=init.yml

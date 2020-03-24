@@ -67,11 +67,10 @@ Luego, configurar un archivo llamado `vars.yml` donde se deben configurar como m
 
 | Variable | Tipo | Descripción |
 | --- | --- | --- |
+| `service` | `Boolean` | Indica si PostgreSQL y AWX debe correrse como servicio. |
 | `awx_version` | `string` | Versión de AWX. Probado con `8.0.0` |
 | `awx_database` | `string` | Nombre de la base de datos. `awx` por defecto. |
 | `awx_database_username` | `string` | Usuario con permisos para acceder a la base de datos de AWX. `aws` por defecto. |
-| `awx_web_host` | `string` | Debe configurarse con el valor `awxweb`. |
-| `awx_task_host` | `string` | Debe configurarse con el valor `awx`. |
 | `postgres_version` | `string` | Debe configurarse con el valor `10`. |
 | `postgres_expose_port` | `boolean` | Configurarlo como `True` si se desea exponer el puerto de la base de datos. |
 | `postgres_admin_username` | `string` | Usuario de administrador de la base de datos. |
@@ -106,6 +105,7 @@ La lista de `playbooks` disponibles es la siguiente:
 | Archivo | Descripción |
 | --- | --- |
 | `backup.yml` | Obtiene un respaldo de la base de datos y lo almacena en S3. |
+| `destroy.yml` | Destruye el ambiente levantado en el servidor.<br/>**OBS: Es destructivo.** |
 | `init.yml` | Inicializa el archivo de `hosts.yml` y `vars.yml` |
 | `list-backups.yml` | Devuelve una lista de los respaldos de las bases de datos existentes. |
 | `ping.yml` | Verifica la conectividad con el servidor. |
@@ -180,7 +180,10 @@ Las tareas definidas son las siguientes:
 | `backup` | Crea un backup de la base de datos y la almacena en S3 | `make backup` |
 | `build` | Crea la imagen del contenedor. | `make build` |
 | `default` | Corre un script para simplificar la ejecución de los `playbooks` | `make` |
+| `destroy` | Destruye el ambiente creado en el servidor.<br/>** OBS: Es destructivo.** | `make destroy` |
 | `init` | Inicializa los archivos `vars.yml` y `hosts.yml` | `make init` |
+| `install-roles` | Instala los roles necesarios del proyecto. | `make install-roles` |
+| `list-roles` | Imprime la lista de los roles instalados. | `make list-roles` |
 | `ping` | Verifica la conectividad con el servidor. | `make ping` |
 | `playbook` | Permite correr un playbook desde el contenedor. Es necesario configurar la variable `file` con el nombre del contenedor para que funcione. | `make playbook file=ping.yml` |
 | `restore` | Reestablece un respaldo anterior de la base de datos en el sistema | `make restore` | 

@@ -2,6 +2,13 @@
   gather_facts: no
   connection: local
   tasks:
+    - name: Crear el archivo .env
+      template:
+        src: ./templates/.env.j2
+        dest: ./.env
+        force: no
+        unsafe_writes: yes
+
     - name: Crear el archivo vars.yml
       template:
         src: ./templates/vars.yml.j2

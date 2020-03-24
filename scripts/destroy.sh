@@ -5,22 +5,21 @@
 # URL:        https://github.com/conatel-i-d/awx-conatel
 # GNU:        MIT
 ###############################################################################
-menuprime(){
+menuprime(){  
   clear
   # Menu interface
   tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🏓 AWX Conatel: ¿Con que editor quieres editar el archivo "$1"?
+🚨🚨🚨 AWX Conatel: Atención! Esta acción no tiene retorno 🚨🚨🚨
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🌵 Seleccione alguna de las siguientes opciones:
+🚦 ¿Esta seguro que desea continuar?:
 
 EOF
   tee <<-EOF
-[1] Vim
-[2] Nano
-[3] Visual Studio Code
+[Y] Si
+[N] No
 
 [M] Volver al menu
 
@@ -30,14 +29,10 @@ EOF
   read -p '▶️  Eliga una opción | Presione [ENTER]: ' typed < /dev/tty
 
   case $typed in
-    1 )
-      vim $1
+    Y )
+      make destroy
       exit ;;
-    2 )
-      nano $1
-      exit ;;
-    3 )
-      code $1
+    N )
       exit ;;
     M )
       exit ;;

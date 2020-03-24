@@ -55,14 +55,18 @@ menuprime(){
 
 EOF
   tee <<-EOF
-[1] Editar archivo de inventario
-[2] Editar archivo de variables
-[3] Levantar el servidor de AWX
-[4] Respaldar el servidor de AWX
-[5] Visualizar la lista de reespaldos existentes
-[6] Restaurar una versión anterior del servidor
+[1] Editar archivo de inventario                    [hosts.yml]
+[2] Editar archivo de variables                     [vars.yml]
+[3] Editar archivo de variables de entorno          [.env]
+[4] Levantar el servidor de AWX                     [ansible-playbook up.yml]
+[5] Respaldar el servidor de AWX                    [ansible-playbook backup.yml]
+[6] Visualizar la lista de reespaldos existentes    [ansible-playbook list-backups.yml]
+[7] Restaurar una versión anterior del servidor     [ansible-playbook restore.yml]
 
-[P] Probar conectividad con el servidor
+[I] Instalar roles desde ansible-galaxy             [make install-roles]
+[L] Listar los roles instalados                     [make list-roles]
+[P] Probar conectividad con el servidor             [ansible-playbook ping.yml]
+[X] Eliminar implementación actual                  [ansible-playbook destroy.yml]
 [Q] Salir
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -73,24 +77,36 @@ EOF
   case $typed in
     1 )
       bash ./scripts/edit-file.sh ./hosts.yml
-      continueprime ;;
+      menuprime ;;
     2 )
       bash ./scripts/edit-file.sh ./vars.yml
-      continueprime ;;
+      menuprime ;;
     3 )
+      bash ./scripts/edit-file.sh ./.env
+      menuprime ;;
+    4 )
       make up
       continueprime ;;
-    4 )
+    5 )
       make backup
       continueprime ;;
-    5 )
+    6 )
       make list-backups
       continueprime ;;
-    6 )
+    7 )
       make restore
+      continueprime ;;
+    I )
+      make install-roles
+      continueprime ;;
+    L )
+      make list-roles
       continueprime ;;
     P )
       make ping
+      continueprime ;;
+    X )
+      bash ./scripts/destroy.sh
       continueprime ;;
     Q )
       exitprime
