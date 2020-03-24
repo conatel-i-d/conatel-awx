@@ -2,11 +2,18 @@
 - hosts: all
   gather_facts: yes
   connection: local
-  vars_files:
-    - ./vars.yml
   vars:
     ansible_python_interpreter: /usr/bin/env python
   tasks:
+    - name: Import vars from vars.yml if file exists
+      block:
+        - name: Import vars from vars.yml
+          include_vars:
+            file: vars.yml
+      rescue:
+        - debug:
+            msg: File does not exist
+
     - name: Dump the awx database
       postgresql_db:
         login_host: '{{ ansible_host }}'
