@@ -15,7 +15,7 @@ initprime(){
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Espere por favor...
 EOF
-  make init > /dev/null
+  ansible-playbook init.yml
   menuprime
 }
 
