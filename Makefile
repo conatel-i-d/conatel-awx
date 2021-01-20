@@ -11,12 +11,18 @@ ifeq (tower-cli,$(firstword $(MAKECMDGOALS)))
   $(eval $(RUN_ARGS):;@:)
 endif
 
-.PHONY: playbook build ping test init restore list-backups attach destroy install-roles list-roles tower-cli
+.PHONY: playbook build ping test init restore list-backups attach destroy install-roles list-roles tower-cli pull
 
 default:
 	@./run.sh
 
-tower-cli: build
+pull:
+	./scripts/pull.sh
+
+pull-silent:
+	@make pull > /dev/null 2>&1
+
+tower-cli: pull-silent
 	@docker run \
 		--rm \
 		-it \
@@ -24,14 +30,18 @@ tower-cli: build
 		--env-file .env \
 		-v `pwd`:/ansible \
 		-v $(ANSIBLE_SSH_PRIVATE_KEY_FILE):/root/.ssh/ansible_ssh_private_key:ro \
-		conatel_digital_hub/awx_vpn \
+		conateldigitalhub/conatel-awx \
 		tower-cli $(RUN_ARGS)
 
-install-roles:
-	@rm -Rf roles \
-	&& ansible-galaxy install -r requirements.yml -p roles --force
+create-roles-folder:
+	@mkdir -p roles
 
-list-roles:
+install-roles:
+	@rm -Rf roles ;\
+	make create-roles-folder ;\
+	ansible-galaxy install -r requirements.yml -p roles --force
+
+list-roles: create-roles-folder
 	@ansible-galaxy list
 
 destroy:
@@ -56,13 +66,13 @@ ping:
 	@make playbook file=ping.yml
 
 build:
-	@docker build -t conatel_digital_hub/awx_vpn \
+	docker build -t conateldigitalhub/conatel-awx \
 	--build-arg TOWER_VERIFY_SSL=$(TOWER_VERIFY_SSL) \
 	--build-arg TOWER_USERNAME=$(TOWER_USERNAME) \
 	--build-arg TOWER_PASSWORD=$(TOWER_PASSWORD) \
-	--build-arg TOWER_HOST=$(TOWER_HOST) . > /dev/null
+	--build-arg TOWER_HOST=$(TOWER_HOST) .
 
-attach: build
+attach: pull-silent
 	@docker run \
 		--rm \
 		-it \
@@ -70,10 +80,10 @@ attach: build
 		--env-file .env \
 		-v `pwd`:/ansible \
 		-v $(ANSIBLE_SSH_PRIVATE_KEY_FILE):/root/.ssh/ansible_ssh_private_key:ro \
-		conatel_digital_hub/awx_vpn \
+		conateldigitalhub/conatel-awx \
 		bash
 
-playbook: build
+playbook: pull-silent
 	@docker run \
 		--rm \
 		-it \
@@ -81,5 +91,5 @@ playbook: build
 		--env-file .env \
 		-v `pwd`:/ansible \
 		-v $(ANSIBLE_SSH_PRIVATE_KEY_FILE):/root/.ssh/ansible_ssh_private_key \
-		conatel_digital_hub/awx_vpn \
+		conateldigitalhub/conatel-awx \
 		ansible-playbook $(file)

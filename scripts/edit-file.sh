@@ -46,4 +46,4 @@ EOF
   esac
 }
 
-menuprime
+menuprime "$@"
